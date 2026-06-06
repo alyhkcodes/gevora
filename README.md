@@ -2,7 +2,7 @@
 
 ### Turn Guest Experiences into Intelligent Decisions.
 
-GEVORA is an AI-powered business intelligence platform for homestay owners. It analyzes guest reviews and images, identifies operational issues, discovers business opportunities, and provides AI-driven recommendations to improve customer satisfaction and business performance.
+GEVORA is an AI-powered business intelligence platform for homestay owners. It analyzes guest reviews and images, identifies operational issues, discovers business opportunities, and provides AI-driven recommendations using Google Gemini's multimodal capabilities.
 
 ## Tech Stack
 
@@ -10,7 +10,7 @@ GEVORA is an AI-powered business intelligence platform for homestay owners. It a
 * Styling: Tailwind CSS
 * Backend: Node.js + Express
 * Database: MongoDB Atlas
-* AI Integration: OpenAI API
+* AI Integration: Google Gemini API
 * Authentication: JWT
 * Deployment: Vercel + Render
 
