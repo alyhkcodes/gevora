@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const links = [
   { href: "/", label: "Home" },
@@ -58,6 +59,7 @@ export default function Navbar() {
             {l.label}
           </Link>
         ))}
+        <ThemeToggle />
         <Link
           href="/login"
           style={{ fontSize: 13.5, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "9px 22px", borderRadius: 12, textDecoration: "none", transition: "all 0.25s", display: "inline-block" }}
@@ -96,6 +98,7 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          <ThemeToggle />
           <Link href="/login" onClick={() => setMenuOpen(false)}
             style={{ fontSize: 14, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "10px 18px", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>
             Sign in

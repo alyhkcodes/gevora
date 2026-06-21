@@ -32,7 +32,6 @@ body {
   font-family: var(--font-display), serif;
 }
 
-/* Glass surface */
 .glass {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(24px);
@@ -48,7 +47,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.92);
 }
 
-/* Drifting ambient glow orbs */
 @keyframes drift-a {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(80px, -60px) scale(1.15); }
@@ -64,4 +62,74 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .orb { animation: none !important; }
+}
+
+/* ===== Dark mode overrides ===== */
+
+html.dark {
+  --color-bg: #121014;
+  --color-bg-deep: #1a1610;
+  --color-ink: #ECE6D6;
+  --color-ink-soft: #B8A88A;
+}
+
+/* Wrapper backgrounds, hex and plain rgb */
+html.dark [style*="#FAF7EE"],
+html.dark [style*="rgb(250, 247, 238)"],
+html.dark [style*="rgb(250,247,238)"] {
+  background: #121014 !important;
+}
+
+/* Wrapper backgrounds with alpha, e.g. inputs and buttons */
+html.dark [style*="rgba(250, 247, 238"],
+html.dark [style*="rgba(250,247,238"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+html.dark body {
+  background: #121014 !important;
+  color: #ECE6D6 !important;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark p,
+html.dark li,
+html.dark label {
+  color: #ECE6D6 !important;
+}
+
+/* Lift glass/card surfaces above the dark background */
+html.dark [style*="rgba(255,255,255"],
+html.dark [style*="rgba(255, 255, 255"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Dark-ink text, hex and rgb formats */
+html.dark [style*="#2C2820"],
+html.dark [style*="rgb(44, 40, 32)"],
+html.dark [style*="rgb(44,40,32)"] {
+  color: #ECE6D6 !important;
+}
+
+/* Muted brown subtitle text (e.g. "Sign in to your intelligence dashboard") */
+html.dark [style*="rgb(122, 112, 96)"],
+html.dark [style*="rgb(122,112,96)"] {
+  color: #B8A88A !important;
+}
+
+/* Keep gold accent punchy */
+html.dark [style*="#D4A017"] {
+  color: #F0C24B !important;
+}
+
+/* Brighten logo image, matched by alt text or filename as a backup */
+html.dark img[alt="Gevora"],
+html.dark img[src*="logo.png"] {
+  filter: brightness(0) invert(1);
 }
