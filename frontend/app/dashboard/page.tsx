@@ -1,8 +1,11 @@
+'use client';
+
 import GlowBackground from "@/components/GlowBackground";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TiltCard from "@/components/TiltCard";
 import FadeIn from "@/components/FadeIn";
+import ReviewsFromAPI from "@/components/ReviewsFromAPI";
 
 const glass = {
   background: "rgba(255,255,255,0.62)",
@@ -49,7 +52,14 @@ export default function Dashboard() {
               <TiltCard style={{ height: "100%" }}>
                 <div style={{ ...glass, borderRadius: 22, padding: "28px 28px", height: "100%" }}>
                   <div style={{ fontSize: 28, marginBottom: 16 }}>{s.icon}</div>
-                  <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 40, fontWeight: 400, color: "#2C2820", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.value}</p>
+                  <p style={{ 
+  fontFamily: "var(--font-outfit), sans-serif", 
+  fontSize: 48, 
+  fontWeight: 200, 
+  color: "#2C2820", 
+  letterSpacing: "-0.04em", 
+  lineHeight: 1,
+}}>{s.value}</p>
                   <p style={{ fontSize: 13, color: "#7A7060", marginTop: 6, fontWeight: 300 }}>{s.label}</p>
                   <p style={{ fontSize: 11, color: "#D4A017", marginTop: 8, fontWeight: 500 }}>{s.trend}</p>
                 </div>
@@ -114,6 +124,13 @@ export default function Dashboard() {
             </div>
           </TiltCard>
         </FadeIn>
+
+        {/* Live Reviews from Backend API */}
+<FadeIn delay={0.4}>
+  <div style={{ ...glass, borderRadius: 22, marginTop: 28 }}>
+    <ReviewsFromAPI />
+  </div>
+</FadeIn>
 
       </main>
 

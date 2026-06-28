@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Playfair_Display, Outfit } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["300", "400", "500", "600"],
+  variable: "--font-outfit",
+  weight: ["200", "300", "400", "500", "600"],
 });
 
 const playfair = Playfair_Display({
@@ -27,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
+    <html lang="en" className={`${outfit.variable} ${playfair.variable}`}>
+      <body style={{ fontFamily: "var(--font-outfit), system-ui, sans-serif" }}>
         <ToastProvider>
           {children}
         </ToastProvider>
