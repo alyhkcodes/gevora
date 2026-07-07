@@ -1,23 +1,36 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { isLoggedIn, removeToken } from "@/lib/auth";
 
 const links = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/issues", label: "Issues" },
   { href: "/about", label: "About" },
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn);
+    setLoggedIn(isLoggedIn());
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  function handleLogout() {
+    removeToken();
+    setLoggedIn(false);
+    setMenuOpen(false);
+    router.push("/login");
+  }
 
   return (
     <nav
@@ -60,14 +73,25 @@ export default function Navbar() {
           </Link>
         ))}
         <ThemeToggle />
-        <Link
-          href="/login"
-          style={{ fontSize: 13.5, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "9px 22px", borderRadius: 12, textDecoration: "none", transition: "all 0.25s", display: "inline-block" }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "#D4A017"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(212,160,23,0.4)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "#2C2820"; e.currentTarget.style.boxShadow = "none"; }}
-        >
-          Sign in
-        </Link>
+        {loggedIn ? (
+          <button
+            onClick={handleLogout}
+            style={{ fontSize: 13.5, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "9px 22px", borderRadius: 12, border: "none", cursor: "pointer", transition: "all 0.25s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#C0392B"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#2C2820"; }}
+          >
+            Logout
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            style={{ fontSize: 13.5, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "9px 22px", borderRadius: 12, textDecoration: "none", transition: "all 0.25s", display: "inline-block" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#D4A017"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(212,160,23,0.4)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#2C2820"; e.currentTarget.style.boxShadow = "none"; }}
+          >
+            Sign in
+          </Link>
+        )}
       </div>
 
       {/* Mobile toggle */}
@@ -99,10 +123,19 @@ export default function Navbar() {
             </Link>
           ))}
           <ThemeToggle />
-          <Link href="/login" onClick={() => setMenuOpen(false)}
-            style={{ fontSize: 14, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "10px 18px", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>
-            Sign in
-          </Link>
+          {loggedIn ? (
+            <button
+              onClick={handleLogout}
+              style={{ fontSize: 14, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "10px 18px", borderRadius: 12, border: "none", cursor: "pointer", textAlign: "center" }}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login" onClick={() => setMenuOpen(false)}
+              style={{ fontSize: 14, fontWeight: 500, background: "#2C2820", color: "#FAF7EE", padding: "10px 18px", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>
+              Sign in
+            </Link>
+          )}
         </div>
       )}
     </nav>

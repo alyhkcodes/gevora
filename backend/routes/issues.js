@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Issue = require('../models/Issue');
+const requireAuth = require('../middleware/auth');
 
 // GET /api/issues — list all issues
 router.get('/', async (req, res) => {
@@ -38,7 +39,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/issues — create issue
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, department, priority } = req.body;
     if (!title || !department || !priority) {
@@ -57,7 +58,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/issues/:id — update issue
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const updated = await Issue.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!updated) return res.status(404).json({ success: false, error: 'Issue not found' });
@@ -68,7 +69,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/issues/:id — delete issue
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const deleted = await Issue.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ success: false, error: 'Issue not found' });

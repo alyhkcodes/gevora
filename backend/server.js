@@ -1,10 +1,12 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const passport = require('./config/passport');
 
-dotenv.config();
-connectDB();
+connectDB();;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,13 +17,18 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(passport.initialize());
 
 // Routes
 const reviewRoutes = require('./routes/reviews');
 const issueRoutes = require('./routes/issues');
+const authRoutes = require('./routes/auth');
+const googleAuthRoutes = require('./routes/googleAuth');
 
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/issues', issueRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/auth', googleAuthRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Review = require('../models/Review');
+const requireAuth = require('../middleware/auth');
 
 // GET /api/reviews — list all reviews
 router.get('/', async (req, res) => {
@@ -40,7 +41,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/reviews — create review
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { guestName, rating, comment, platform } = req.body;
     if (!guestName || !rating || !comment || !platform) {
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/reviews/:id — update review
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const updated = await Review.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!updated) return res.status(404).json({ success: false, error: 'Review not found' });
@@ -72,7 +73,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/reviews/:id — delete review
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const deleted = await Review.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ success: false, error: 'Review not found' });
