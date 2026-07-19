@@ -8,6 +8,7 @@ import { isLoggedIn, removeToken } from "@/lib/auth";
 const links = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/insights", label: "Insights" },
   { href: "/issues", label: "Issues" },
   { href: "/about", label: "About" },
 ];
