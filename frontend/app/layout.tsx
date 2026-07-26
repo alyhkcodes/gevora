@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Outfit } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -30,7 +31,9 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} ${playfair.variable}`}>
       <body style={{ fontFamily: "var(--font-outfit), system-ui, sans-serif" }}>
         <ToastProvider>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </ToastProvider>
       </body>
     </html>
