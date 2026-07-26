@@ -59,8 +59,8 @@ export default function InsightsPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || "Failed to get AI insights.");
-      }
+  throw new Error(data.error || "Failed to get AI insights.");
+}
       setResult(data.data);
       showToast("Insights generated successfully.", "success");
     } catch (err: any) {
