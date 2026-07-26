@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { getAllReviews, createReview } from '@/lib/api';
+import { useState } from 'react';
+import { createReview, updateReview, deleteReview } from '@/lib/api';
 import TiltCard from '@/components/TiltCard';
 
 interface Review {
@@ -15,9 +15,12 @@ interface Review {
   issueFlag: boolean;
 }
 
-export default function ReviewsFromAPI() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ReviewsFromAPIProps {
+  reviews: Review[];
+  refetchReviews: () => Promise<void>;
+}
+
+export default function ReviewsFromAPI({ reviews, refetchReviews }: ReviewsFromAPIProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
@@ -27,34 +30,35 @@ export default function ReviewsFromAPI() {
   const [platform, setPlatform] = useState('Google');
   const [submitting, setSubmitting] = useState(false);
 
-  async function fetchReviews() {
-    try {
-      setLoading(true);
-      const data = await getAllReviews();
-      setReviews(data.data);
-    } catch (err) {
-      setError('Failed to load reviews from backend.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
   async function handleAddReview(e: React.FormEvent) {
     e.preventDefault();
-    if (!guestName || !comment) return;
+    setError(null);
+
+    const trimmedName = guestName.trim();
+    const trimmedComment = comment.trim();
+
+    if (!trimmedName) {
+      setError('Guest name is required.');
+      return;
+    }
+    if (trimmedComment.length < 10) {
+      setError('Review comment must be at least 10 characters.');
+      return;
+    }
+    if (rating < 1 || rating > 5) {
+      setError('Rating must be between 1 and 5.');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await createReview({ guestName, rating, comment, platform });
+      await createReview({ guestName: trimmedName, rating, comment: trimmedComment, platform });
       setGuestName('');
       setComment('');
       setRating(5);
       setPlatform('Google');
       setShowForm(false);
-      await fetchReviews();
+      await refetchReviews();
     } catch (err) {
       setError('Failed to create review.');
     } finally {
@@ -63,35 +67,27 @@ export default function ReviewsFromAPI() {
   }
 
   async function handleDelete(id: string) {
+    const confirmed = window.confirm('Are you sure you want to delete this review? This cannot be undone.');
+    if (!confirmed) return;
+
+    setError(null);
     try {
-      await fetch(`http://localhost:5000/api/reviews/${id}`, { method: 'DELETE' });
-      await fetchReviews();
+      await deleteReview(id);
+      await refetchReviews();
     } catch (err) {
-      setError('Failed to delete review.');
+      setError('Failed to delete review. You may need to log in again.');
     }
   }
 
   async function handleToggleFlag(id: string, current: boolean) {
+    setError(null);
     try {
-      await fetch(`http://localhost:5000/api/reviews/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ issueFlag: !current }),
-      });
-      await fetchReviews();
+      await updateReview(id, { issueFlag: !current });
+      await refetchReviews();
     } catch (err) {
-      setError('Failed to update review.');
+      setError('Failed to update review. You may need to log in again.');
     }
   }
-
-  if (loading) return (
-    <div style={{ padding: "36px 32px", textAlign: "center" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-        <div style={{ width: 20, height: 20, border: "2px solid #D4A017", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <span style={{ fontSize: 13, color: "#B8A88A" }}>Loading reviews from backend...</span>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ padding: "36px 32px" }}>
