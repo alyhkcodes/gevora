@@ -46,4 +46,4 @@ Express.js REST API for the Gevora homestay intelligence platform.
 | GET | /api/issues/search?status= | Filter issues |
 | POST | /api/issues | Create issue |
 | PUT | /api/issues/:id | Update issue |
-| DELETE | /api/issues/:id | Delete issue |
+| DELETE | /api/issues/:id | Delete issue | 

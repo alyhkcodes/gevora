@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { loginUser } from '@/lib/api';
 import { saveToken } from '@/lib/auth';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -52,7 +54,7 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: 1, background: 'rgba(212,160,23,0.2)' }} />
         </div>
 
-        <a href="http://localhost:5000/api/auth/google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#fff', color: '#2C2820', border: '1px solid rgba(212,160,23,0.25)', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+        <a href={`${API_BASE}/auth/google`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#fff', color: '#2C2820', border: '1px solid rgba(212,160,23,0.25)', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
           Sign in with Google
         </a>
 
