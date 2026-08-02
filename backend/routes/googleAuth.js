@@ -20,7 +20,8 @@ router.get('/google/callback',
     );
 
     // Redirect back to frontend with the token as a query param
-    res.redirect(`http://localhost:3000/oauth-success?token=${token}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/oauth-success?token=${token}`);
   }
 );
 
