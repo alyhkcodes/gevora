@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAF7EE', padding: 24 }}>
-      <form onSubmit={handleSubmit} style={{ background: '#fff', border: '1px solid rgba(212,160,23,0.2)', borderRadius: 16, padding: '32px 28px', width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <form onSubmit={handleSubmit} style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(212,160,23,0.2)', borderRadius: 16, padding: '32px 28px', width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <h1 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: 24, color: '#2C2820', marginBottom: 4 }}>Welcome back</h1>
         <p style={{ fontSize: 13, color: '#B8A88A', marginBottom: 8 }}>Log in to your Gevora account</p>
 
@@ -41,8 +41,8 @@ export default function LoginPage() {
           </div>
         )}
 
-        <input type="email" placeholder="Email" value={email} required onChange={(e) => setEmail(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13 }} />
-        <input type="password" placeholder="Password" value={password} required onChange={(e) => setPassword(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13 }} />
+        <input type="email" placeholder="Email" value={email} required onChange={(e) => setEmail(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13, background: 'rgba(255,255,255,0.9)', color: '#2C2820' }} />
+        <input type="password" placeholder="Password" value={password} required onChange={(e) => setPassword(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13, background: 'rgba(255,255,255,0.9)', color: '#2C2820' }} />
 
         <button type="submit" disabled={loading} style={{ background: '#2C2820', color: '#FAF7EE', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', marginTop: 6 }}>
           {loading ? 'Logging in...' : 'Log In'}
@@ -54,7 +54,7 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: 1, background: 'rgba(212,160,23,0.2)' }} />
         </div>
 
-        <a href={`${API_BASE}/auth/google`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#fff', color: '#2C2820', border: '1px solid rgba(212,160,23,0.25)', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+        <a href={`${API_BASE}/auth/google`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(255,255,255,0.9)', color: '#2C2820', border: '1px solid rgba(212,160,23,0.25)', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
           Sign in with Google
         </a>
 

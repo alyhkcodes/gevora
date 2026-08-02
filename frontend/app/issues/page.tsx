@@ -101,6 +101,17 @@ export default function IssuesPage() {
   }
 }
 
+  const priorityRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+
+  const sortedIssues = [...issues].sort((a, b) => {
+    // Open issues always come before resolved ones
+    if (a.status !== b.status) {
+      return a.status === 'open' ? -1 : 1;
+    }
+    // Within the same status, sort by priority: high → medium → low
+    return (priorityRank[a.priority] ?? 3) - (priorityRank[b.priority] ?? 3);
+  });
+
   return (
     <RouteGuard>
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#FAF7EE" }}>
@@ -170,7 +181,7 @@ export default function IssuesPage() {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {issues.map((issue) => (
+            {sortedIssues.map((issue) => (
               <FadeIn key={issue._id}>
                 <TiltCard>
                   <div style={{ ...glass, borderRadius: 16, padding: "20px 24px" }}>

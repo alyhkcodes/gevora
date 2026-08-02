@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import RouteGuard from '@/components/RouteGuard';
 import GlowBackground from "@/components/GlowBackground";
 import Navbar from "@/components/Navbar";
@@ -8,6 +8,7 @@ import TiltCard from "@/components/TiltCard";
 import FadeIn from "@/components/FadeIn";
 import ReviewsFromAPI from "@/components/ReviewsFromAPI";
 import { getAllReviews, getAllIssues } from '@/lib/api';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const glass = {
   background: "rgba(255,255,255,0.62)",
@@ -54,6 +55,12 @@ function timeAgo(dateStr: string): string {
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
+
+const sentimentToScore: Record<string, number> = {
+  positive: 1,
+  neutral: 0,
+  negative: -1,
+};
 
 export default function Dashboard() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
@@ -119,14 +126,78 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime())
     .slice(0, 4);
 
+  const sentimentTrendData = useMemo(() => {
+    if (!reviews.length) return [];
+
+    const byDate = new Map<string, { total: number; count: number }>();
+
+    [...reviews]
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .forEach((r) => {
+        const d = new Date(r.date);
+        if (isNaN(d.getTime())) return;
+        const key = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        const score = sentimentToScore[r.sentiment] ?? 0;
+        const existing = byDate.get(key) || { total: 0, count: 0 };
+        byDate.set(key, { total: existing.total + score, count: existing.count + 1 });
+      });
+
+    return Array.from(byDate.entries()).map(([date, { total, count }]) => ({
+      date,
+      sentiment: Number((total / count).toFixed(2)),
+    }));
+  }, [reviews]);
+
   if (loading) {
     return (
       <RouteGuard>
-        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#FAF7EE" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 20, height: 20, border: "2px solid #D4A017", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-            <span style={{ fontSize: 13, color: "#B8A88A" }}>Loading dashboard...</span>
-          </div>
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#FAF7EE" }}>
+          <GlowBackground />
+          <Navbar />
+          <main style={{ position: "relative", zIndex: 1, flex: 1, maxWidth: 1100, margin: "0 auto", width: "100%", padding: "140px 24px 100px" }}>
+
+            <div style={{ marginBottom: 48 }}>
+              <div className="skeleton" style={{ width: 140, height: 12, marginBottom: 14 }} />
+              <div className="skeleton" style={{ width: 320, height: 40, marginBottom: 12 }} />
+              <div className="skeleton" style={{ width: 260, height: 16 }} />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 28 }}>
+              {[0, 1, 2].map((i) => (
+                <div key={i} style={{ ...glass, borderRadius: 22, padding: "28px 28px" }}>
+                  <div className="skeleton" style={{ width: 32, height: 32, marginBottom: 16, borderRadius: 8 }} />
+                  <div className="skeleton" style={{ width: 80, height: 40, marginBottom: 10 }} />
+                  <div className="skeleton" style={{ width: 110, height: 12, marginBottom: 8 }} />
+                  <div className="skeleton" style={{ width: 90, height: 12 }} />
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
+              {[0, 1].map((i) => (
+                <div key={i} style={{ ...glass, borderRadius: 22, padding: "28px 28px" }}>
+                  <div className="skeleton" style={{ width: 120, height: 12, marginBottom: 20 }} />
+                  {[0, 1, 2].map((j) => (
+                    <div key={j} style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                      <div className="skeleton" style={{ width: 6, height: 6, borderRadius: "50%", marginTop: 6 }} />
+                      <div style={{ flex: 1 }}>
+                        <div className="skeleton" style={{ width: "80%", height: 14, marginBottom: 6 }} />
+                        <div className="skeleton" style={{ width: 60, height: 11 }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ ...glass, borderRadius: 22, padding: "36px 32px" }}>
+              <div className="skeleton" style={{ width: 100, height: 12, margin: "0 auto 16px" }} />
+              <div className="skeleton" style={{ width: 200, height: 20, margin: "0 auto 24px" }} />
+              <div className="skeleton" style={{ width: "100%", height: 220 }} />
+            </div>
+
+          </main>
+          <Footer />
         </div>
       </RouteGuard>
     );
@@ -242,16 +313,33 @@ export default function Dashboard() {
 
           </div>
 
-          {/* Chart placeholder */}
+          {/* Sentiment trend chart */}
           <FadeIn delay={0.35}>
             <TiltCard>
-              <div style={{ ...glass, borderRadius: 22, padding: "36px 32px", textAlign: "center" as const }}>
-                <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#B8A88A", marginBottom: 16 }}>Analytics</p>
-                <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 18, color: "#2C2820", marginBottom: 8 }}>Sentiment trend over time</p>
-                <p style={{ fontSize: 13, color: "#B8A88A", fontWeight: 300 }}>Charts will render here in future weeks</p>
-                <div style={{ marginTop: 24, height: 80, borderRadius: 12, background: "linear-gradient(90deg, rgba(229,190,100,0.1), rgba(180,210,160,0.15), rgba(229,190,100,0.1))", border: "1px solid rgba(229,190,100,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 24, opacity: 0.4 }}>📊</span>
-                </div>
+              <div style={{ ...glass, borderRadius: 22, padding: "36px 32px" }}>
+                <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#B8A88A", marginBottom: 16, textAlign: "center" as const }}>Analytics</p>
+                <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 18, color: "#2C2820", marginBottom: 24, textAlign: "center" as const }}>Sentiment trend over time</p>
+
+                {sentimentTrendData.length === 0 ? (
+                  <p style={{ fontSize: 13, color: "#B8A88A", fontWeight: 300, textAlign: "center" as const, padding: "20px 0" }}>
+                    Not enough review data yet to plot a trend.
+                  </p>
+                ) : (
+                  <div style={{ width: "100%", height: 220 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={sentimentTrendData} margin={{ top: 5, right: 20, bottom: 5, left: -10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,168,138,0.25)" />
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#B8A88A" }} axisLine={{ stroke: "rgba(184,168,138,0.3)" }} tickLine={false} />
+                        <YAxis domain={[-1, 1]} ticks={[-1, 0, 1]} tick={{ fontSize: 11, fill: "#B8A88A" }} axisLine={false} tickLine={false} />
+                        <Tooltip
+                          contentStyle={{ background: "#FAF7EE", border: "1px solid rgba(184,168,138,0.3)", borderRadius: 10, fontSize: 12 }}
+                          labelStyle={{ color: "#2C2820" }}
+                        />
+                        <Line type="monotone" dataKey="sentiment" stroke="#D4A017" strokeWidth={2} dot={{ r: 3, fill: "#D4A017" }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
               </div>
             </TiltCard>
           </FadeIn>

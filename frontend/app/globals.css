@@ -59,7 +59,27 @@ body {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(40px, 40px) scale(0.95); }
 }
+@keyframes drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 40px) scale(0.95); }
+}
 
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(184, 168, 138, 0.12) 25%,
+    rgba(184, 168, 138, 0.22) 37%,
+    rgba(184, 168, 138, 0.12) 63%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius: 8px;
+}
 @media (prefers-reduced-motion: reduce) {
   .orb { animation: none !important; }
 }
