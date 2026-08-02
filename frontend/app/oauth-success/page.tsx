@@ -1,9 +1,9 @@
 'use client';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { saveToken } from '@/lib/auth';
 
-export default function OAuthSuccessPage() {
+function OAuthSuccessInner() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -18,4 +18,12 @@ export default function OAuthSuccessPage() {
   }, [params, router]);
 
   return <p style={{ padding: 40, textAlign: 'center' }}>Signing you in...</p>;
+}
+
+export default function OAuthSuccessPage() {
+  return (
+    <Suspense fallback={<p style={{ padding: 40, textAlign: 'center' }}>Signing you in...</p>}>
+      <OAuthSuccessInner />
+    </Suspense>
+  );
 }
