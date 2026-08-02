@@ -7,6 +7,7 @@ Gevora is now fully deployed and live in production. This document covers the de
 - **Frontend (Vercel):** https://gevora-pink.vercel.app
 - **Backend API (Render):** https://gevora-api.onrender.com
 - **Health check:** https://gevora-api.onrender.com/api/health
+- **OAuth login:** Working end-to-end on production (Google sign-in)
 
 ## Deployment Architecture
 
@@ -86,6 +87,12 @@ Gevora is now fully deployed and live in production. This document covers the de
 - ✅ AI-powered review insight generation (Gemini API)
 - ✅ CRUD persistence verified (data survives page refresh, confirming database writes)
 - ✅ CORS correctly scoped to production frontend origin
+
+## Known Limitations (Free Tier)
+
+- **Render free tier** spins down the backend after 15 minutes of inactivity. The first request after an idle period can take 30–60 seconds while the server cold-starts.
+- **MongoDB Atlas free tier (M0)** has shared compute/storage and a connection limit — not intended for production-scale traffic.
+- **Vercel Hobby plan** limits serverless function execution time and bandwidth — fine for this project's scope but worth noting for scaling.
 
 ## Author
 **Aly Husain Khan**
