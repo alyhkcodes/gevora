@@ -34,7 +34,7 @@ export default function RegisterPage() {
       background: '#FAF7EE', padding: 24,
     }}>
       <form onSubmit={handleSubmit} style={{
-        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(24px)', border: '1px solid rgba(212,160,23,0.2)', borderRadius: 16,
+        background: '#fff', border: '1px solid rgba(212,160,23,0.2)', borderRadius: 16,
         padding: '32px 28px', width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 14,
       }}>
         <h1 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: 24, color: '#2C2820', marginBottom: 4 }}>
@@ -51,17 +51,17 @@ export default function RegisterPage() {
         <input
           type="text" placeholder="Name" value={name}
           onChange={(e) => setName(e.target.value)}
-          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.9)', background: 'rgba(250,247,238,0.7)', color: '#2C2820', fontSize: 13 }}
+          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13 }}
         />
         <input
           type="email" placeholder="Email" value={email} required
           onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.9)', background: 'rgba(250,247,238,0.7)', color: '#2C2820', fontSize: 13 }}
+          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13 }}
         />
         <input
           type="password" placeholder="Password (min 6 characters)" value={password} required
           onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.9)', background: 'rgba(250,247,238,0.7)', color: '#2C2820', fontSize: 13 }}
+          style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(212,160,23,0.25)', fontSize: 13 }}
         />
         <button type="submit" disabled={loading}
           style={{ background: '#2C2820', color: '#FAF7EE', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', marginTop: 6 }}>

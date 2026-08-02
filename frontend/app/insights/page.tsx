@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, DragEvent, ChangeEvent } from "react";
+import { useState } from "react";
 import RouteGuard from "@/components/RouteGuard";
 import GlowBackground from "@/components/GlowBackground";
 import Navbar from "@/components/Navbar";
@@ -38,90 +38,29 @@ const sentimentColor: Record<string, string> = {
   neutral: "#D4A017",
 };
 
-const MAX_IMAGES = 5;
-const MAX_SIZE_MB = 8;
-
-interface StagedImage {
-  file: File;
-  previewUrl: string;
-}
-
 export default function InsightsPage() {
   const { showToast } = useToast();
   const [reviewsText, setReviewsText] = useState("");
-  const [images, setImages] = useState<StagedImage[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<InsightsResult | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function addFiles(fileList: FileList | File[]) {
-    const incoming = Array.from(fileList);
-    const validImages = incoming.filter((f) => f.type.startsWith("image/"));
-
-    if (validImages.length !== incoming.length) {
-      showToast("Only image files are supported.", "warning");
-    }
-
-    const room = MAX_IMAGES - images.length;
-    if (room <= 0) {
-      showToast(`You can attach up to ${MAX_IMAGES} images.`, "warning");
-      return;
-    }
-
-    const tooBig = validImages.filter((f) => f.size > MAX_SIZE_MB * 1024 * 1024);
-    if (tooBig.length > 0) {
-      showToast(`Some images exceed ${MAX_SIZE_MB}MB and were skipped.`, "warning");
-    }
-
-    const accepted = validImages
-      .filter((f) => f.size <= MAX_SIZE_MB * 1024 * 1024)
-      .slice(0, room)
-      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }));
-
-    setImages((prev) => [...prev, ...accepted]);
-  }
-
-  function handleDrop(e: DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
-  }
-
-  function handleFileInputChange(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.files?.length) addFiles(e.target.files);
-    e.target.value = ""; // allow re-selecting the same file later
-  }
-
-  function removeImage(index: number) {
-    setImages((prev) => {
-      const next = [...prev];
-      URL.revokeObjectURL(next[index].previewUrl);
-      next.splice(index, 1);
-      return next;
-    });
-  }
 
   async function handleSubmit() {
-    if (!reviewsText.trim() && images.length === 0) {
-      showToast("Paste a review or attach at least one photo before submitting.", "warning");
+    if (!reviewsText.trim()) {
+      showToast("Please paste at least one review before submitting.", "warning");
       return;
     }
     setLoading(true);
     setResult(null);
     try {
-      const formData = new FormData();
-      if (reviewsText.trim()) formData.append("reviewsText", reviewsText);
-      images.forEach((img) => formData.append("images", img.file));
-
       const res = await fetch(`${API_BASE}/ai/insights`, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewsText }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to get AI insights.");
-      }
+  throw new Error(data.error || "Failed to get AI insights.");
+}
       setResult(data.data);
       showToast("Insights generated successfully.", "success");
     } catch (err: any) {
@@ -176,7 +115,7 @@ export default function InsightsPage() {
               AI Review Insights
             </h1>
             <p style={{ fontSize: 15, color: "#7A7060", fontWeight: 300 }}>
-              Paste guest reviews and/or attach photos — Gevora surfaces themes, sentiment, and issues automatically.
+              Paste guest reviews below and let Gevora surface themes, sentiment, and rating impression automatically.
             </p>
           </div>
 
@@ -227,123 +166,7 @@ export default function InsightsPage() {
                     e.currentTarget.style.boxShadow = "inset 0 2px 8px rgba(44,40,32,0.04)";
                   }}
                 />
-
-                {/* Divider */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    margin: "22px 0 18px",
-                  }}
-                >
-                  <div style={{ flex: 1, height: 1, background: "rgba(184,168,138,0.25)" }} />
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "#B8A88A",
-                    }}
-                  >
-                    Attach Photos (optional)
-                  </span>
-                  <div style={{ flex: 1, height: 1, background: "rgba(184,168,138,0.25)" }} />
-                </div>
-
-                {/* Drag & drop zone */}
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    if (!loading) setIsDragging(true);
-                  }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={loading ? undefined : handleDrop}
-                  onClick={() => !loading && fileInputRef.current?.click()}
-                  style={{
-                    border: `1.5px dashed ${isDragging ? "#D4A017" : "rgba(184,168,138,0.4)"}`,
-                    borderRadius: 14,
-                    padding: "24px 16px",
-                    textAlign: "center",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    background: isDragging ? "rgba(212,160,23,0.06)" : "rgba(250,247,238,0.4)",
-                    transition: "all 0.15s ease",
-                    opacity: loading ? 0.5 : 1,
-                  }}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileInputChange}
-                    disabled={loading}
-                    style={{ display: "none" }}
-                  />
-                  <p style={{ fontSize: 13.5, color: "#7A7060", marginBottom: 4 }}>
-                    {isDragging ? "Drop images here" : "Drag & drop photos, or click to browse"}
-                  </p>
-                  <p style={{ fontSize: 11.5, color: "#B8A88A" }}>
-                    Up to {MAX_IMAGES} images, {MAX_SIZE_MB}MB each — e.g. a damaged sink, unclean room, etc.
-                  </p>
-                </div>
-
-                {/* Thumbnails */}
-                {images.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
-                    {images.map((img, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          position: "relative",
-                          width: 72,
-                          height: 72,
-                          borderRadius: 10,
-                          overflow: "hidden",
-                          border: "1px solid rgba(255,255,255,0.9)",
-                          boxShadow: "0 2px 10px rgba(44,40,32,0.08)",
-                        }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={img.previewUrl}
-                          alt={`Attachment ${i + 1}`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeImage(i);
-                          }}
-                          disabled={loading}
-                          style={{
-                            position: "absolute",
-                            top: 3,
-                            right: 3,
-                            width: 20,
-                            height: 20,
-                            borderRadius: "50%",
-                            border: "none",
-                            background: "rgba(44,40,32,0.75)",
-                            color: "#FAF7EE",
-                            fontSize: 12,
-                            lineHeight: 1,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          aria-label="Remove image"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div style={{ marginTop: 20, display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
                   <Button variant="secondary" onClick={handleSubmit} disabled={loading}>
                     {loading ? "Analyzing..." : "Get Insights"}
                   </Button>
