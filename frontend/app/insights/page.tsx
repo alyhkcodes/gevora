@@ -9,7 +9,7 @@ import TiltCard from "@/components/TiltCard";
 import FadeIn from "@/components/FadeIn";
 import { Button, Loader, useToast } from "@/components/ui";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const glass = {
   background: "rgba(255,255,255,0.62)",
@@ -52,7 +52,7 @@ export default function InsightsPage() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch(`${API_BASE}/api/ai/insights`, {
+      const res = await fetch(`${API_BASE}/ai/insights`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reviewsText }),
