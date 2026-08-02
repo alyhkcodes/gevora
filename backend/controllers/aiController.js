@@ -1,25 +1,31 @@
 const Review = require("../models/Review"); // adjust path/name to match your existing model
 const { getReviewInsights } = require("../services/aiService");
- 
+
 async function postInsights(req, res) {
   try {
     const { hotelId, reviewsText } = req.body;
- 
+
     let textToAnalyze = reviewsText;
- 
+
     if (!textToAnalyze && hotelId) {
       const reviews = await Review.find({ hotel: hotelId }).limit(50);
-      if (!reviews.length) {
+      if (!reviews.length && (!req.files || req.files.length === 0)) {
         return res.status(404).json({ success: false, error: "No reviews found for this hotel" });
       }
       textToAnalyze = reviews.map((r) => r.comment || r.text || "").join("\n---\n");
     }
- 
-    if (!textToAnalyze) {
-      return res.status(400).json({ success: false, error: "Provide either hotelId or reviewsText" });
+
+    // Convert uploaded images (in memory as Buffers) into base64 for Gemini
+    const images = (req.files || []).map((file) => ({
+      mimeType: file.mimetype,
+      data: file.buffer.toString("base64"),
+    }));
+
+    if (!textToAnalyze && images.length === 0) {
+      return res.status(400).json({ success: false, error: "Provide reviewsText, hotelId, and/or at least one image" });
     }
- 
-    const insights = await getReviewInsights(textToAnalyze);
+
+    const insights = await getReviewInsights(textToAnalyze, images);
     return res.status(200).json({ success: true, data: insights });
   } catch (err) {
     console.error("[AI Insights] error:", err.message, err.cause || "");
@@ -33,6 +39,5 @@ async function postInsights(req, res) {
     });
   }
 }
- 
+
 module.exports = { postInsights };
- 
